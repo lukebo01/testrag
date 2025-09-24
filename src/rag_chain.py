@@ -5,11 +5,9 @@ from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 # --- NUOVI IMPORT ---
 from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.llms import Ollama 
 from langchain_community.vectorstores import FAISS
 # --- FINE NUOVI IMPORT ---
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser # Aggiungiamo un parser di output
 from typing import List
 from langchain_core.documents import Document

@@ -11,6 +11,7 @@ from pathlib import Path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.rag_chain import create_rag_chain
+from src.rag_graph import create_rag_graph
 
 
 def main():
@@ -39,7 +40,7 @@ def main():
     
     try:
         # Crea la catena RAG
-        rag_chain = create_rag_chain(str(document_path))
+        rag_app = create_rag_graph(str(document_path))
         
         print("\nBenvenuto al sistema RAG semplice!")
         print("Puoi fare domande sul documento caricato.")
@@ -59,9 +60,9 @@ def main():
             
             # Esegui la catena con la domanda dell'utente
             try:
-                response = rag_chain.invoke({"question": user_input})
+                response = rag_app.invoke({"question": user_input})
                 print("\nRisposta:")
-                print(response)
+                print(response['generation'])
             except Exception as e:
                 print(f"Si è verificato un errore durante l'elaborazione della domanda: {e}")
                 

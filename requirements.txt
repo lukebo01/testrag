@@ -8,3 +8,5 @@ langchain-community
 sentence-transformers
 langchain-ollama
 langchain-google-genai
+langgraph
+langchain-huggingface
