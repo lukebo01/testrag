@@ -10,3 +10,6 @@ langchain-ollama
 langchain-google-genai
 langgraph
 langchain-huggingface
+crewai
+litellm
+crewai-tools

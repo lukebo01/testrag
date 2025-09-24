@@ -13,62 +13,46 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.rag_chain import create_rag_chain
 from src.rag_graph import create_rag_graph
 
+# Aggiungiamo l'import per la nostra nuova funzione
+from src.crew_builder import create_blog_post_crew
 
 def main():
-    """
-    Funzione principale dell'applicazione.
-    Carica le variabili d'ambiente, inizializza la catena RAG e gestisce l'interfaccia CLI.
-    """
-    # Carica le variabili d'ambiente
     load_dotenv()
     
-    # Verifica che la chiave API sia presente
-    if not os.getenv("GOOGLE_API_KEY") or os.getenv("GOOGLE_API_KEY") == "inserisci_la_tua_chiave_qui":
+    if not os.getenv("GOOGLE_API_KEY"):
         print("Errore: La chiave API di Google non è stata configurata.")
-        print("Per favore, aggiorna il file .env con la tua chiave API.")
         return
-    
-    # Definisci il percorso al documento
-    base_dir = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    document_path = base_dir / "data" / "documento.txt"
-    
-    if not document_path.exists():
-        print(f"Errore: Il file {document_path} non esiste.")
-        return
-    
-    print("Inizializzazione della catena RAG in corso...")
-    
-    try:
-        # Crea la catena RAG
-        rag_app = create_rag_graph(str(document_path))
-        
-        print("\nBenvenuto al sistema RAG semplice!")
-        print("Puoi fare domande sul documento caricato.")
-        print("Digita 'esci' per terminare il programma.\n")
-        
-        # Loop principale dell'interfaccia CLI
-        while True:
-            user_input = input("\nLa tua domanda: ")
-            
-            if user_input.lower() in ["esci", "exit", "quit", "q"]:
-                print("Arrivederci!")
-                break
-            
-            if not user_input.strip():
-                print("Per favore, inserisci una domanda.")
-                continue
-            
-            # Esegui la catena con la domanda dell'utente
-            try:
-                response = rag_app.invoke({"question": user_input})
-                print("\nRisposta:")
-                print(response['generation'])
-            except Exception as e:
-                print(f"Si è verificato un errore durante l'elaborazione della domanda: {e}")
-                
-    except Exception as e:
-        print(f"Errore nell'inizializzazione della catena RAG: {e}")
 
+    print("\nBenvenuto al sistema di creazione di contenuti con CrewAI!")
+    print("Digita 'esci' per terminare il programma.\n")
+    
+    while True:
+        # Modifichiamo il prompt per l'utente
+        topic = input("\nSu quale argomento vuoi che la crew scriva un post? ")
+        
+        if topic.lower() in ["esci", "exit", "quit", "q"]:
+            print("Arrivederci!")
+            break
+        
+        if not topic.strip():
+            continue
+        
+        try:
+            print("\n--- La Crew sta iniziando a lavorare... ---")
+            
+            # 1. Crea la crew con l'argomento fornito
+            blog_crew = create_blog_post_crew(topic)
+            
+            # 2. Avvia il lavoro della crew. Il metodo si chiama kickoff()
+            result = blog_crew.kickoff()
+            
+            print("\n\n--- Lavoro Terminato! Ecco il risultato finale: ---")
+            print(result)
+
+        except Exception as e:
+            import traceback
+            print(f"\nSi è verificato un errore durante il lavoro della crew:")
+            traceback.print_exc()
 
 if __name__ == "__main__":
     main()
