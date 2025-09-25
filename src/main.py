@@ -10,11 +10,7 @@ from pathlib import Path
 # Aggiungi il percorso della directory principale al path per l'importazione
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.rag_chain import create_rag_chain
-from src.rag_graph import create_rag_graph
-
-# Aggiungiamo l'import per la nostra nuova funzione
-from src.crew_builder import create_blog_post_crew
+from src.crew_builder import create_rag_crew
 
 def main():
     load_dotenv()
@@ -23,33 +19,37 @@ def main():
         print("Errore: La chiave API di Google non è stata configurata.")
         return
 
-    print("\nBenvenuto al sistema di creazione di contenuti con CrewAI!")
-    print("Digita 'esci' per terminare il programma.\n")
+    print("\nBenvenuto al sistema RAG basato su CrewAI!")
+    print("Formula domande sul contenuto di 'documento.txt'. Digita 'esci' per terminare.\n")
     
     while True:
-        # Modifichiamo il prompt per l'utente
-        topic = input("\nSu quale argomento vuoi che la crew scriva un post? ")
+        question = input("\nQual è la tua domanda sul documento? ")
         
-        if topic.lower() in ["esci", "exit", "quit", "q"]:
+        if question.lower() in ["esci", "exit", "quit", "q"]:
             print("Arrivederci!")
             break
         
-        if not topic.strip():
+        if not question.strip():
             continue
         
         try:
-            print("\n--- La Crew sta iniziando a lavorare... ---")
-            
-            # 1. Crea la crew con l'argomento fornito
-            blog_crew = create_blog_post_crew(topic)
-            
-            # 2. Avvia il lavoro della crew. Il metodo si chiama kickoff()
-            result = blog_crew.kickoff()
-            
-            print("\n\n--- Lavoro Terminato! Ecco il risultato finale: ---")
+            print("\n--- Recupero del contesto dal documento... ---")
+            rag_run = create_rag_crew(question)
+
+            if rag_run.context:
+                print("\nEstratti principali utilizzati dalla crew:\n")
+                print(rag_run.context)
+
+            print("\n--- La crew sta elaborando la risposta... ---")
+            result = rag_run.crew.kickoff()
+
+            print("\n\n--- Risposta finale ---")
             print(result)
 
-        except Exception as e:
+        except FileNotFoundError as err:
+            print(f"\nErrore: {err}")
+            break
+        except Exception:
             import traceback
             print(f"\nSi è verificato un errore durante il lavoro della crew:")
             traceback.print_exc()
